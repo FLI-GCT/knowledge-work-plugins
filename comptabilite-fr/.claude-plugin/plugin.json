@@ -1,0 +1,8 @@
+{
+  "name": "comptabilite-fr",
+  "version": "1.0.0",
+  "description": "Automatiser les workflows de comptabilité française : écritures PCG, rapprochement bancaire, déclaration de TVA, états financiers, liasse fiscale et clôture comptable. Conçu pour le Plan Comptable Général et la réglementation fiscale française.",
+  "author": {
+    "name": "Anthropic"
+  }
+}

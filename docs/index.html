@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cockpit des Plugins</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --white: #ffffff;
+      --g50: #fafafa;
+      --g100: #f4f4f5;
+      --g150: #ececee;
+      --g200: #e4e4e7;
+      --g300: #d4d4d8;
+      --g400: #a1a1aa;
+      --g500: #71717a;
+      --g600: #52525b;
+      --g700: #3f3f46;
+      --g800: #27272a;
+      --g900: #18181b;
+      --g950: #09090b;
+      --indigo: #4f46e5;
+      --violet: #7c3aed;
+      --cyan: #0891b2;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--white); color: var(--g900); line-height: 1.5; }
+    ::selection { background: var(--indigo); color: white; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--g300); border-radius: 5px; }
+    @keyframes enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .enter { animation: enter .25s ease-out both; }
+    button { font-family: inherit; }
+    a { color: inherit; text-decoration: none; }
+    code, .mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo, useCallback } = React;
+
+const P = [
+  { id:"productivity", name:"Productivite", letter:"P", c:"#4f46e5", v:"1.0.0",
+    desc:"Gerez vos taches, planifiez votre journee et construisez une memoire du contexte important de votre travail. Se synchronise avec votre agenda, email et messagerie.",
+    domain:"Organisation",
+    cmds:[
+      {n:"start",d:"Initialiser le systeme de productivite et ouvrir le tableau de bord"},
+      {n:"update",d:"Synchroniser les taches et rafraichir la memoire depuis l'activite en cours",a:"[--comprehensive]"}],
+    skills:[
+      {n:"memory-management",d:"Gestion du contexte personnel et des connaissances institutionnelles"},
+      {n:"task-management",d:"Suivi des taches avec fichier TASKS.md et tableau de bord visuel"}],
+    conn:["Slack","Notion","Asana","Linear","Jira","Monday","ClickUp","Microsoft 365"]},
+
+  { id:"sales", name:"Ventes", letter:"V", c:"#059669", v:"1.0.0",
+    desc:"Prospectez, redigez des messages de contact et elaborez des strategies commerciales plus rapidement. Preparez vos appels, gerez votre pipeline et redigez des messages personnalises.",
+    domain:"Revenue",
+    cmds:[
+      {n:"call-summary",d:"Traiter les notes d'appel — extraire les actions, rediger le suivi, generer le resume interne",a:"<notes d'appel>"},
+      {n:"forecast",d:"Prevision de ventes ponderee avec scenarios optimiste/probable/pessimiste",a:"<periode>"},
+      {n:"pipeline-review",d:"Analyser la sante du pipeline — prioriser les affaires, signaler les risques",a:"<segment>"}],
+    skills:[
+      {n:"account-research",d:"Recherche approfondie sur une entreprise ou un contact via web et enrichissement"},
+      {n:"call-prep",d:"Agenda pre-appel, gestion des objections, questions de decouverte"},
+      {n:"competitive-intelligence",d:"Fiches comparatives concurrentielles et analyse de positionnement"},
+      {n:"create-an-asset",d:"Creation de supports commerciaux (presentations, fiches produit, propositions)"},
+      {n:"daily-briefing",d:"Briefing matinal des ventes avec priorites et mises a jour du pipeline"},
+      {n:"draft-outreach",d:"Emails de prospection personnalises et sequences automatisees"}],
+    conn:["Slack","HubSpot","Close","Clay","ZoomInfo","Notion","Jira","Fireflies","Microsoft 365"]},
+
+  { id:"customer-support", name:"Support Client", letter:"SC", c:"#0891b2", v:"1.0.0",
+    desc:"Triez les tickets, redigez des reponses, escaladez les problemes et construisez votre base de connaissances. Recherchez le contexte client et transformez les incidents resolus en contenu.",
+    domain:"Support",
+    cmds:[
+      {n:"draft-response",d:"Rediger une reponse professionnelle orientee client",a:"<situation>"},
+      {n:"escalate",d:"Preparer une escalade avec le contexte complet",a:"<probleme>"},
+      {n:"kb-article",d:"Rediger un article de base de connaissances a partir d'un incident resolu",a:"<incident resolu>"},
+      {n:"research",d:"Recherche multi-sources sur une question client",a:"<question>"},
+      {n:"triage",d:"Trier et prioriser un ticket de support",a:"<ticket>"}],
+    skills:[
+      {n:"customer-research",d:"Recherche du contexte de compte et de l'historique client"},
+      {n:"escalation",d:"Routage des escalades et evaluation de la severite"},
+      {n:"knowledge-management",d:"Creation d'articles de base de connaissances a partir de tickets resolus"},
+      {n:"response-drafting",d:"Guides de ton et de style, modeles de reponses"},
+      {n:"ticket-triage",d:"Framework de priorisation et de categorisation des tickets"}],
+    conn:["Slack","Intercom","HubSpot","Guru","Jira","Notion","Microsoft 365"]},
+
+  { id:"product-management", name:"Gestion Produit", letter:"GP", c:"#7c3aed", v:"1.0.0",
+    desc:"Redigez des specs, planifiez des roadmaps, synthetisez la recherche utilisateur, tenez les parties prenantes informees et suivez le paysage concurrentiel.",
+    domain:"Produit",
+    cmds:[
+      {n:"competitive-brief",d:"Creer un brief d'analyse concurrentielle",a:"<concurrent>"},
+      {n:"metrics-review",d:"Analyser les metriques produit avec tendances et recommandations",a:"<periode>"},
+      {n:"roadmap-update",d:"Mettre a jour ou reprioriser la roadmap produit",a:"<modification>"},
+      {n:"stakeholder-update",d:"Generer une mise a jour pour les parties prenantes",a:"<audience>"},
+      {n:"synthesize-research",d:"Synthetiser la recherche utilisateur en insights structures",a:"<sujet>"},
+      {n:"write-spec",d:"Rediger une spec fonctionnelle ou un PRD",a:"<idee de fonctionnalite>"}],
+    skills:[
+      {n:"competitive-analysis",d:"Evaluation du paysage concurrentiel et positionnement"},
+      {n:"feature-spec",d:"Modeles et methodologie de specifications fonctionnelles"},
+      {n:"metrics-tracking",d:"Hierarchie des metriques produit, OKR, tableaux de bord"},
+      {n:"roadmap-management",d:"Frameworks de priorisation (RICE, MoSCoW, ICE)"},
+      {n:"stakeholder-comms",d:"Communication executive et mises a jour de statut"},
+      {n:"user-research-synthesis",d:"Schemas d'analyse de recherche et extraction d'insights"}],
+    conn:["Slack","Linear","Asana","Monday","ClickUp","Jira","Notion","Figma","Amplitude","Pendo","Intercom","Fireflies"]},
+
+  { id:"marketing", name:"Marketing", letter:"M", c:"#db2777", v:"1.0.0",
+    desc:"Creez du contenu, planifiez des campagnes, analysez les performances sur tous les canaux. Maintenez la coherence de la voix de marque, suivez les concurrents et rapportez les resultats.",
+    domain:"Marketing",
+    cmds:[
+      {n:"brand-review",d:"Evaluer un contenu par rapport a la voix de marque et au guide de style",a:"<contenu>"},
+      {n:"campaign-plan",d:"Brief de campagne complet avec objectifs et calendrier",a:"<objectif>"},
+      {n:"competitive-brief",d:"Comparaison du positionnement et de la messagerie concurrentielle",a:"<concurrent>"},
+      {n:"draft-content",d:"Rediger des articles, posts sociaux, emails, pages d'atterrissage",a:"<type et sujet>"},
+      {n:"email-sequence",d:"Concevoir des sequences d'emails de nurturing multi-etapes",a:"[type]"},
+      {n:"performance-report",d:"Rapport de performance marketing avec tendances et recommandations",a:"<periode>"},
+      {n:"seo-audit",d:"Audit SEO complet avec analyse des mots-cles et des lacunes de contenu",a:"<url>"}],
+    skills:[
+      {n:"brand-voice",d:"Coherence de marque, standards de messagerie, guides de ton"},
+      {n:"campaign-planning",d:"Framework en 5 parties : Objectif, Audience, Message, Canal, Mesure"},
+      {n:"competitive-analysis",d:"Positionnement concurrentiel et analyse de marche"},
+      {n:"content-creation",d:"Guides de redaction de contenu et adaptation du ton"},
+      {n:"performance-analytics",d:"Suivi des KPI, attribution, performance par canal"}],
+    conn:["Slack","Canva","Figma","HubSpot","Amplitude","Notion","Ahrefs","SimilarWeb","Klaviyo"]},
+
+  { id:"legal", name:"Juridique", letter:"J", c:"#d97706", v:"1.0.0",
+    desc:"Revue de contrats, tri des NDA, workflows de conformite, evaluation des risques juridiques, preparation de reunions et reponses types pour les equipes juridiques internes.",
+    domain:"Juridique",
+    cmds:[
+      {n:"brief",d:"Briefings juridiques — resume quotidien, recherche thematique, reponse a incident",a:"[type]"},
+      {n:"respond",d:"Generer une reponse a une demande juridique courante via des modeles",a:"[type de demande]"},
+      {n:"review-contract",d:"Revue clause par clause selon le playbook de negociation",a:"<contrat>"},
+      {n:"triage-nda",d:"Trier rapidement un NDA — approbation standard, avis juridique ou revue complete",a:"<NDA>"},
+      {n:"vendor-check",d:"Verifier le statut des accords existants avec un fournisseur",a:"[fournisseur]"}],
+    skills:[
+      {n:"canned-responses",d:"Gestion des modeles de reponses avec declencheurs d'escalade"},
+      {n:"compliance",d:"Reglementations vie privee (RGPD, CCPA), revue des DPA"},
+      {n:"contract-review",d:"Revue basee sur le playbook avec classification VERT/JAUNE/ROUGE"},
+      {n:"legal-risk-assessment",d:"Framework d'evaluation des risques et classification de severite"},
+      {n:"meeting-briefing",d:"Preparation de reunions et briefing contextuel juridique"},
+      {n:"nda-triage",d:"Screening, routage et classification des risques NDA"}],
+    conn:["Slack","Box","Egnyte","Jira","Microsoft 365"]},
+
+  { id:"finance", name:"Finance", letter:"F", c:"#ea580c", v:"1.0.0",
+    desc:"Ecritures comptables, rapprochements, etats financiers, analyse des ecarts. Accelerez la preparation d'audit, la cloture mensuelle et la tenue de vos comptes.",
+    domain:"Finance",
+    cmds:[
+      {n:"income-statement",d:"Compte de resultat avec comparaison periode par periode",a:"<freq> <periode>"},
+      {n:"journal-entry",d:"Ecritures comptables avec debits, credits et detail justificatif",a:"<type> [periode]"},
+      {n:"reconciliation",d:"Rapprocher les soldes GL avec les sous-livres, banques ou tiers",a:"<compte>"},
+      {n:"sox-testing",d:"Selections d'echantillons SOX, papiers de test, evaluations de controles",a:"<domaine>"},
+      {n:"variance-analysis",d:"Decomposer les ecarts en facteurs explicatifs avec narratifs",a:"<poste> vs <comp>"}],
+    skills:[
+      {n:"audit-support",d:"Methodologie de test SOX 404 et standards de documentation"},
+      {n:"close-management",d:"Checklist de cloture mensuelle, sequencement des taches, dependances"},
+      {n:"financial-statements",d:"Formats GAAP pour compte de resultat, bilan et flux de tresorerie"},
+      {n:"journal-entry-prep",d:"Types d'ecritures (CF, immobilisations, charges constatees, paie, revenus), bonnes pratiques"},
+      {n:"reconciliation",d:"Rapprochement GL-sous-livre, bancaire et intercompagnie"},
+      {n:"variance-analysis",d:"Decomposition prix/volume, seuils de materialite, narratifs"}],
+    conn:["Snowflake","Databricks","BigQuery","Slack","Microsoft 365"]},
+
+  { id:"data", name:"Donnees", letter:"D", c:"#2563eb", v:"1.0.0",
+    desc:"Ecrivez du SQL, explorez des jeux de donnees, generez des insights. Construisez des visualisations et tableaux de bord, transformez les donnees brutes en histoires claires.",
+    domain:"Analytique",
+    cmds:[
+      {n:"analyze",d:"Repondre a des questions de donnees — consultations rapides a analyses completes",a:"<question>"},
+      {n:"build-dashboard",d:"Construire un tableau de bord HTML interactif avec graphiques",a:"<description>"},
+      {n:"create-viz",d:"Visualisations de qualite publication avec Python",a:"<source>"},
+      {n:"explore-data",d:"Profiler et explorer un jeu de donnees — forme, qualite, patterns",a:"<table>"},
+      {n:"validate",d:"Controler une analyse — methodologie, exactitude, biais",a:"<analyse>"},
+      {n:"write-query",d:"Ecrire du SQL optimise pour votre dialecte",a:"<description>"}],
+    skills:[
+      {n:"data-context-extractor",d:"Generer des skills d'analyse specifiques a l'entreprise"},
+      {n:"data-exploration",d:"Profilage de jeux de donnees et identification de patterns"},
+      {n:"data-validation",d:"Controles de qualite des donnees et frameworks de validation"},
+      {n:"data-visualization",d:"Choix de graphiques, principes de design, accessibilite"},
+      {n:"interactive-dashboard-builder",d:"Conception de tableaux de bord avec generation HTML/JS"},
+      {n:"sql-queries",d:"Bonnes pratiques SQL par dialecte (Snowflake, BQ, Databricks)"},
+      {n:"statistical-analysis",d:"Methodes statistiques, tests d'hypotheses, modelisation"}],
+    conn:["Snowflake","Databricks","BigQuery","Hex","Amplitude","Jira"]},
+
+  { id:"enterprise-search", name:"Recherche Entreprise", letter:"RE", c:"#4f46e5", v:"1.0.0",
+    desc:"Recherchez dans tous les outils de votre entreprise en un seul endroit. Trouvez n'importe quoi dans les emails, messageries, documents et wikis sans changer d'application.",
+    domain:"Recherche",
+    cmds:[
+      {n:"digest",d:"Resume quotidien ou hebdomadaire de l'activite sur toutes les sources",a:"[--daily | --weekly]"},
+      {n:"search",d:"Rechercher dans toutes les sources connectees en une seule requete",a:"<requete>"}],
+    skills:[
+      {n:"knowledge-synthesis",d:"Agreger les resultats multi-sources en reponses coherentes"},
+      {n:"search-strategy",d:"Decomposition de requetes et orchestration multi-sources"},
+      {n:"source-management",d:"Detection des sources, guide de connexion, gestion des limites"}],
+    conn:["Slack","Notion","Guru","Jira","Asana","Microsoft 365"]},
+
+  { id:"bio-research", name:"Bio-Recherche", letter:"BR", c:"#0d9488", v:"1.0.0",
+    desc:"Connectez-vous aux outils et bases de donnees de recherche preclinique — recherche bibliographique, analyse genomique, priorisation des cibles pour la R&D en sciences de la vie.",
+    domain:"Sciences",
+    cmds:[
+      {n:"start",d:"Configurer l'environnement de bio-recherche et explorer les outils disponibles"}],
+    skills:[
+      {n:"instrument-data-to-allotrope",d:"Convertir les sorties d'instruments de labo au format Allotrope (40+ types)"},
+      {n:"nextflow-development",d:"Executer des pipelines nf-core (rnaseq, sarek, atacseq)"},
+      {n:"scientific-problem-selection",d:"Framework de selection de problemes de recherche (9 sous-competences)"},
+      {n:"scvi-tools",d:"Apprentissage profond pour omiques cellule unique (scVI, scANVI, totalVI)"},
+      {n:"single-cell-rna-qc",d:"Controle qualite pour donnees scRNA-seq (.h5ad/.h5)"}],
+    conn:["PubMed","BioRender","bioRxiv","ClinicalTrials.gov","ChEMBL","Synapse","Wiley","Owkin","Open Targets","Benchling"]},
+
+  { id:"cowork-plugin-management", name:"Gestion de Plugins", letter:"GP", c:"#475569", v:"0.2.1",
+    desc:"Creez, personnalisez et gerez des plugins pour votre organisation. Configurez les serveurs MCP et adaptez les modeles a votre fonctionnement.",
+    domain:"Meta",
+    cmds:[],
+    skills:[
+      {n:"cowork-plugin-customizer",d:"Personnaliser les plugins existants avec les valeurs specifiques a l'organisation"},
+      {n:"create-cowork-plugin",d:"Guider a travers le workflow de creation de plugin en 5 phases"}],
+    conn:[]},
+];
+
+const TC = P.reduce((s,p) => s+p.cmds.length, 0);
+const TS = P.reduce((s,p) => s+p.skills.length, 0);
+const AC = [...new Set(P.flatMap(p => p.conn))];
+
+/* ───────── ICONES ───────── */
+const I = {
+  cmd: (s=16) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m4 17 6-6-6-6"/><path d="M12 19h8"/></svg>,
+  brain: (s=16) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>,
+  plug: (s=16) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8Z"/></svg>,
+  arr: (s=12) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>,
+  back: (s=16) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>,
+  search: (s=16) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>,
+  zap: (s=16) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>,
+};
+
+/* ───────── COMPOSANTS ───────── */
+
+function Badge({children, color, mono, small}) {
+  return <span className={mono?"mono":""} style={{
+    display:'inline-flex', alignItems:'center', gap:4,
+    padding: small ? '1px 6px' : '2px 8px',
+    borderRadius: 4, fontSize: small ? 10 : 11, fontWeight: 500, letterSpacing: '0.01em',
+    background: color ? `${color}0d` : 'var(--g100)',
+    color: color || 'var(--g600)',
+    border: `1px solid ${color ? color+'20' : 'var(--g200)'}`,
+  }}>{children}</span>;
+}
+
+function Metric({value, label, color}) {
+  return <div style={{textAlign:'center'}}>
+    <div style={{fontSize:32, fontWeight:700, letterSpacing:'-0.03em', color: color||'var(--g900)', lineHeight:1}}>{value}</div>
+    <div style={{fontSize:11, color:'var(--g500)', fontWeight:500, marginTop:4, textTransform:'uppercase', letterSpacing:'0.06em'}}>{label}</div>
+  </div>;
+}
+
+function Card({p, onClick, i}) {
+  const [h, setH] = useState(false);
+  return <div onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+    className="enter" style={{
+      animationDelay:`${i*35}ms`,
+      cursor:'pointer', position:'relative',
+      background: h ? 'var(--g50)' : 'var(--white)',
+      border: `1px solid ${h ? 'var(--g300)' : 'var(--g200)'}`,
+      borderRadius: 8, padding: '20px 20px 16px',
+      transition: 'all .15s ease',
+      transform: h?'translateY(-1px)':'none',
+      boxShadow: h ? '0 4px 12px rgba(0,0,0,.06)' : 'none',
+    }}>
+    <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:10}}>
+      <div style={{display:'flex', alignItems:'center', gap:10}}>
+        <div style={{
+          width:34, height:34, borderRadius:7, background: p.c, color:'#fff',
+          display:'flex', alignItems:'center', justifyContent:'center',
+          fontSize:12, fontWeight:700, letterSpacing:'-0.02em', fontFamily:"'Inter',sans-serif",
+        }}>{p.letter}</div>
+        <div>
+          <div style={{fontSize:14, fontWeight:650, color:'var(--g900)', lineHeight:1.2}}>{p.name}</div>
+          <div style={{fontSize:11, color:'var(--g400)', fontWeight:500}}>{p.domain}</div>
+        </div>
+      </div>
+      <span style={{color: h ? p.c : 'var(--g300)', transition:'color .15s'}}>{I.arr(14)}</span>
+    </div>
+    <p style={{fontSize:12.5, color:'var(--g600)', lineHeight:1.5, marginBottom:14,
+      display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden'}}>{p.desc}</p>
+    <div style={{display:'flex', gap:6}}>
+      <Badge color={p.c}><span style={{display:'inline-flex',alignItems:'center'}}>{I.cmd(11)}</span> {p.cmds.length}</Badge>
+      <Badge color="#7c3aed"><span style={{display:'inline-flex',alignItems:'center'}}>{I.brain(11)}</span> {p.skills.length}</Badge>
+      <Badge color="#0891b2"><span style={{display:'inline-flex',alignItems:'center'}}>{I.plug(11)}</span> {p.conn.length}</Badge>
+    </div>
+  </div>;
+}
+
+function TabBar({tabs, active, onChange}) {
+  return <div style={{display:'flex', gap:0, borderBottom:'1px solid var(--g200)', marginBottom:20}}>
+    {tabs.map(t => <button key={t.id} onClick={()=>onChange(t.id)} style={{
+      padding:'8px 14px', fontSize:13, fontWeight: active===t.id ? 600 : 400,
+      color: active===t.id ? 'var(--g900)' : 'var(--g400)',
+      background:'none', border:'none', cursor:'pointer',
+      borderBottom: active===t.id ? `2px solid ${t.c||'var(--g900)'}` : '2px solid transparent',
+      marginBottom:-1, transition:'all .15s',
+    }}>{t.label}{t.count!==undefined && <span style={{
+      marginLeft:5, fontSize:10, fontWeight:600, padding:'1px 5px', borderRadius:3,
+      background: active===t.id ? (t.c||'var(--g900)')+'0d' : 'var(--g100)',
+      color: active===t.id ? (t.c||'var(--g900)') : 'var(--g400)',
+    }}>{t.count}</span>}</button>)}
+  </div>;
+}
+
+function Detail({p, onBack}) {
+  const [tab, setTab] = useState('commands');
+  const tabs = [
+    {id:'commands', label:'Commandes', c:p.c, count:p.cmds.length},
+    {id:'skills', label:'Competences', c:'#7c3aed', count:p.skills.length},
+    {id:'connectors', label:'Connecteurs', c:'#0891b2', count:p.conn.length},
+    {id:'structure', label:'Structure', c:'var(--g600)'},
+  ];
+
+  return <div className="enter">
+    <button onClick={onBack} style={{
+      display:'inline-flex', alignItems:'center', gap:4, padding:'4px 0',
+      border:'none', background:'none', cursor:'pointer',
+      fontSize:12, fontWeight:500, color:'var(--g400)', marginBottom:20,
+    }}><span style={{display:'inline-flex'}}>{I.back(14)}</span> Retour</button>
+
+    <div style={{display:'flex', alignItems:'center', gap:16, marginBottom:28}}>
+      <div style={{
+        width:48, height:48, borderRadius:10, background:p.c, color:'#fff',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        fontSize:18, fontWeight:700,
+      }}>{p.letter}</div>
+      <div style={{flex:1}}>
+        <div style={{display:'flex', alignItems:'baseline', gap:10}}>
+          <h1 style={{fontSize:24, fontWeight:750, letterSpacing:'-0.03em'}}>{p.name}</h1>
+          <Badge small>{p.v}</Badge>
+          <Badge color={p.c} small>{p.domain}</Badge>
+        </div>
+        <p style={{fontSize:13, color:'var(--g500)', marginTop:2, maxWidth:640}}>{p.desc}</p>
+      </div>
+    </div>
+
+    <div style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:1, background:'var(--g200)', borderRadius:8, overflow:'hidden', marginBottom:28}}>
+      <div style={{background:'var(--white)', padding:'18px 0'}}><Metric value={p.cmds.length} label="Commandes" color={p.c}/></div>
+      <div style={{background:'var(--white)', padding:'18px 0'}}><Metric value={p.skills.length} label="Competences" color="#7c3aed"/></div>
+      <div style={{background:'var(--white)', padding:'18px 0'}}><Metric value={p.conn.length} label="Connecteurs" color="#0891b2"/></div>
+    </div>
+
+    <div style={{display:'flex', alignItems:'center', gap:0, marginBottom:28, padding:'14px 20px', background:'var(--g50)', borderRadius:8, border:'1px solid var(--g200)', overflowX:'auto'}}>
+      {[
+        {label:'Utilisateur', bg:'var(--g100)', fg:'var(--g700)', bc:'var(--g200)'},
+        {label:`/${p.cmds[0]?.n||'skill'}`, bg:`${p.c}0a`, fg:p.c, bc:`${p.c}20`, mono:true},
+        {label:`${p.skills.length} Competences`, bg:'#7c3aed0a', fg:'#7c3aed', bc:'#7c3aed20'},
+        ...(p.conn.length ? [{label:`${p.conn.length} MCP`, bg:'#0891b20a', fg:'#0891b2', bc:'#0891b220'}] : []),
+        {label:'Resultat', bg:'#0596690a', fg:'#059669', bc:'#05966920'},
+      ].map((s,i,a) => <React.Fragment key={i}>
+        <div style={{padding:'5px 12px', borderRadius:5, background:s.bg, border:`1px solid ${s.bc}`, fontSize:12, fontWeight:600, color:s.fg, whiteSpace:'nowrap'}} className={s.mono?'mono':''}>{s.label}</div>
+        {i<a.length-1 && <div style={{padding:'0 6px', color:'var(--g300)', display:'flex', flexShrink:0}}>{I.arr(10)}</div>}
+      </React.Fragment>)}
+    </div>
+
+    <TabBar tabs={tabs} active={tab} onChange={setTab}/>
+
+    {tab==='commands' && (p.cmds.length===0
+      ? <div style={{padding:40, textAlign:'center', color:'var(--g400)', fontSize:13}}>Aucune commande — plugin base uniquement sur les competences</div>
+      : <div style={{display:'flex', flexDirection:'column', gap:1, background:'var(--g200)', borderRadius:8, overflow:'hidden', border:'1px solid var(--g200)'}}>
+        <div style={{display:'grid', gridTemplateColumns:'180px 1fr', gap:16, padding:'8px 16px', background:'var(--g50)', fontSize:11, fontWeight:600, color:'var(--g400)', textTransform:'uppercase', letterSpacing:'0.06em'}}>
+          <div>Commande</div><div>Description</div>
+        </div>
+        {p.cmds.map((c,i) => <div key={c.n} className="enter" style={{animationDelay:`${i*30}ms`, display:'grid', gridTemplateColumns:'180px 1fr', gap:16, padding:'10px 16px', background:'var(--white)', alignItems:'baseline'}}>
+          <div style={{display:'flex', alignItems:'center', gap:6}}>
+            <span className="mono" style={{fontSize:13, fontWeight:600, color:p.c}}>/{c.n}</span>
+            {c.a && <span className="mono" style={{fontSize:10, color:'var(--g400)'}}>{c.a}</span>}
+          </div>
+          <div style={{fontSize:13, color:'var(--g600)'}}>{c.d}</div>
+        </div>)}
+      </div>
+    )}
+
+    {tab==='skills' && <div style={{display:'flex', flexDirection:'column', gap:1, background:'var(--g200)', borderRadius:8, overflow:'hidden', border:'1px solid var(--g200)'}}>
+      <div style={{display:'grid', gridTemplateColumns:'200px 1fr', gap:16, padding:'8px 16px', background:'var(--g50)', fontSize:11, fontWeight:600, color:'var(--g400)', textTransform:'uppercase', letterSpacing:'0.06em'}}>
+        <div>Competence</div><div>Description</div>
+      </div>
+      {p.skills.map((s,i) => <div key={s.n} className="enter" style={{animationDelay:`${i*30}ms`, display:'grid', gridTemplateColumns:'200px 1fr', gap:16, padding:'10px 16px', background:'var(--white)', alignItems:'baseline'}}>
+        <div style={{display:'flex', alignItems:'center', gap:6}}>
+          <span style={{color:'#7c3aed', display:'inline-flex'}}>{I.brain(13)}</span>
+          <span style={{fontSize:13, fontWeight:600, color:'var(--g800)'}}>{s.n}</span>
+        </div>
+        <div style={{fontSize:13, color:'var(--g600)'}}>{s.d}</div>
+      </div>)}
+    </div>}
+
+    {tab==='connectors' && (p.conn.length===0
+      ? <div style={{padding:40, textAlign:'center', color:'var(--g400)', fontSize:13}}>Aucun connecteur externe requis</div>
+      : <div>
+        <div style={{padding:'12px 16px', background:'var(--g50)', borderRadius:8, border:'1px solid var(--g200)', marginBottom:16, display:'flex', alignItems:'center', gap:8}}>
+          <span style={{color:'#059669', display:'inline-flex'}}>{I.zap(14)}</span>
+          <span style={{fontSize:12, color:'var(--g600)'}}>
+            Fonctionne <strong style={{color:'var(--g800)'}}>sans aucun connecteur</strong> (autonome). Chaque outil connecte enrichit progressivement les resultats.
+          </span>
+        </div>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(180px, 1fr))', gap:8}}>
+          {p.conn.map((c,i) => <div key={c} className="enter" style={{
+            animationDelay:`${i*25}ms`,
+            padding:'10px 14px', borderRadius:6, border:'1px solid var(--g200)', background:'var(--white)',
+            display:'flex', alignItems:'center', gap:8, fontSize:13, fontWeight:500, color:'var(--g700)',
+          }}>
+            <span style={{width:6, height:6, borderRadius:3, background:p.c, flexShrink:0}}/>
+            {c}
+          </div>)}
+        </div>
+      </div>
+    )}
+
+    {tab==='structure' && <div style={{padding:20, background:'var(--g50)', borderRadius:8, border:'1px solid var(--g200)'}}>
+      <pre className="mono" style={{fontSize:12.5, lineHeight:1.9, color:'var(--g600)', whiteSpace:'pre', overflowX:'auto'}}>
+{`${p.id}/
+  .claude-plugin/
+    `}<span style={{color:p.c}}>plugin.json</span>{`          v${p.v}
+`}{p.conn.length>0&&<>{`  `}<span style={{color:'#0891b2'}}>.mcp.json</span>{`             ${p.conn.length} serveurs\n`}</>}
+{p.cmds.length>0&&<>{`  `}<span style={{color:'var(--g800)', fontWeight:600}}>commands/</span>{`\n`}{p.cmds.map(c=>`    ${c.n}.md\n`).join('')}</>}
+{`  `}<span style={{color:'var(--g800)', fontWeight:600}}>skills/</span>{`\n`}{p.skills.map(s=>`    ${s.n}/\n      SKILL.md\n`).join('')}
+{`  README.md`}{p.conn.length>0?`\n  CONNECTORS.md`:''}
+      </pre>
+    </div>}
+  </div>;
+}
+
+function ConnChart() {
+  const data = useMemo(() => {
+    const m = {};
+    P.forEach(p => p.conn.forEach(c => { if(!m[c]) m[c]=[]; m[c].push(p); }));
+    return Object.entries(m).sort((a,b)=>b[1].length-a[1].length).slice(0,12);
+  }, []);
+  const max = data[0]?.[1].length || 1;
+
+  return <div>
+    <h3 style={{fontSize:11, fontWeight:600, color:'var(--g400)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:12}}>Utilisation des connecteurs par plugin</h3>
+    <div style={{display:'flex', flexDirection:'column', gap:3}}>
+      {data.map(([name, plugins]) => <div key={name} style={{display:'flex', alignItems:'center', gap:10, height:26}}>
+        <span style={{fontSize:12, fontWeight:500, width:100, textAlign:'right', color:'var(--g500)', flexShrink:0}}>{name}</span>
+        <div style={{flex:1, height:18, background:'var(--g100)', borderRadius:3, overflow:'hidden'}}>
+          <div style={{
+            height:'100%', width:`${(plugins.length/max)*100}%`,
+            background: plugins.length >= 7 ? 'var(--g800)' : plugins.length >= 4 ? 'var(--g500)' : 'var(--g300)',
+            borderRadius:3, transition:'width .4s ease',
+            display:'flex', alignItems:'center', justifyContent:'flex-end', paddingRight:6, minWidth:24,
+          }}>
+            <span style={{fontSize:10, fontWeight:700, color:'#fff'}}>{plugins.length}</span>
+          </div>
+        </div>
+        <div style={{display:'flex', gap:2, flexShrink:0}}>
+          {plugins.map(p => <div key={p.id} title={p.name} style={{
+            width:16, height:16, borderRadius:4, background:p.c,
+            display:'flex', alignItems:'center', justifyContent:'center',
+            fontSize:7, fontWeight:800, color:'#fff',
+          }}>{p.letter[0]}</div>)}
+        </div>
+      </div>)}
+    </div>
+  </div>;
+}
+
+function Arch() {
+  const items = [
+    {label:'plugin.json', desc:'Manifeste : nom, version, description', c:'var(--g800)'},
+    {label:'.mcp.json', desc:'Connexions aux serveurs MCP (outils)', c:'#0891b2'},
+    {label:'commands/*.md', desc:'Commandes slash explicites avec workflows', c:'var(--indigo)'},
+    {label:'skills/*/SKILL.md', desc:'Expertise metier chargee automatiquement', c:'#7c3aed'},
+    {label:'CONNECTORS.md', desc:'Placeholders de categories d\'outils (~~categorie)', c:'var(--g500)'},
+  ];
+  return <div>
+    <h3 style={{fontSize:11, fontWeight:600, color:'var(--g400)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:12}}>Architecture des plugins</h3>
+    <div style={{display:'flex', flexDirection:'column', gap:1, background:'var(--g200)', borderRadius:6, overflow:'hidden'}}>
+      {items.map(it => <div key={it.label} style={{display:'flex', alignItems:'center', gap:12, padding:'8px 14px', background:'var(--white)'}}>
+        <span className="mono" style={{fontSize:12, fontWeight:600, color:it.c, width:160, flexShrink:0}}>{it.label}</span>
+        <span style={{fontSize:12, color:'var(--g500)'}}>{it.desc}</span>
+      </div>)}
+    </div>
+  </div>;
+}
+
+function App() {
+  const [view, setView] = useState('list');
+  const [sel, setSel] = useState(null);
+  const [q, setQ] = useState('');
+  const [dom, setDom] = useState(null);
+
+  const domains = useMemo(() => [...new Set(P.map(p=>p.domain))], []);
+  const filtered = useMemo(() => P.filter(p => {
+    if(q && !p.name.toLowerCase().includes(q.toLowerCase()) && !p.desc.toLowerCase().includes(q.toLowerCase()) && !p.id.includes(q.toLowerCase())) return false;
+    if(dom && p.domain!==dom) return false;
+    return true;
+  }), [q,dom]);
+
+  const open = useCallback(p => { setSel(p); setView('detail'); window.scrollTo({top:0,behavior:'smooth'}); }, []);
+  const back = useCallback(() => { setView('list'); setSel(null); }, []);
+
+  return <div style={{maxWidth:960, margin:'0 auto', padding:'40px 24px 80px'}}>
+    <header style={{marginBottom:36, display:'flex', justifyContent:'space-between', alignItems:'flex-start'}}>
+      <div>
+        <div style={{display:'flex', alignItems:'center', gap:8, marginBottom:2}}>
+          <div style={{width:6, height:6, borderRadius:1, background:'var(--g900)'}}/>
+          <span style={{fontSize:11, fontWeight:600, color:'var(--g400)', textTransform:'uppercase', letterSpacing:'0.1em'}}>Anthropic</span>
+        </div>
+        <h1 style={{fontSize:28, fontWeight:800, letterSpacing:'-0.04em', color:'var(--g900)'}}>Cockpit des Plugins</h1>
+        <p style={{fontSize:13, color:'var(--g400)', marginTop:2}}>Documentation interactive des {P.length} plugins Knowledge Work</p>
+      </div>
+      {view==='detail' && <button onClick={back} style={{
+        padding:'6px 12px', borderRadius:6, border:'1px solid var(--g200)', background:'var(--white)',
+        fontSize:12, fontWeight:500, color:'var(--g600)', cursor:'pointer', display:'flex', alignItems:'center', gap:4,
+      }}><span style={{display:'inline-flex'}}>{I.back(13)}</span> Tous les plugins</button>}
+    </header>
+
+    {view==='list' && <>
+      <div style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, background:'var(--g200)', borderRadius:8, overflow:'hidden', marginBottom:32}}>
+        <div style={{background:'var(--white)', padding:'20px 0'}}><Metric value={P.length} label="Plugins"/></div>
+        <div style={{background:'var(--white)', padding:'20px 0'}}><Metric value={TC} label="Commandes"/></div>
+        <div style={{background:'var(--white)', padding:'20px 0'}}><Metric value={TS} label="Competences"/></div>
+        <div style={{background:'var(--white)', padding:'20px 0'}}><Metric value={AC.length} label="Connecteurs"/></div>
+      </div>
+
+      <div style={{display:'flex', gap:8, marginBottom:24, alignItems:'center', flexWrap:'wrap'}}>
+        <div style={{position:'relative', flex:'1 1 260px'}}>
+          <span style={{position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'var(--g400)', display:'inline-flex'}}>{I.search(15)}</span>
+          <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Rechercher un plugin..."
+            style={{width:'100%', padding:'7px 10px 7px 32px', borderRadius:6, border:'1px solid var(--g200)',
+              background:'var(--white)', color:'var(--g900)', fontSize:13, fontFamily:'inherit', outline:'none'}}/>
+        </div>
+        <div style={{display:'flex', gap:4}}>
+          <button onClick={()=>setDom(null)} style={{
+            padding:'5px 10px', borderRadius:5, border:`1px solid ${!dom?'var(--g800)':'var(--g200)'}`,
+            background:!dom?'var(--g900)':'var(--white)', color:!dom?'#fff':'var(--g500)',
+            fontSize:12, fontWeight:500, cursor:'pointer',
+          }}>Tous</button>
+          {domains.map(d=><button key={d} onClick={()=>setDom(dom===d?null:d)} style={{
+            padding:'5px 10px', borderRadius:5,
+            border:`1px solid ${dom===d?P.find(x=>x.domain===d).c+'40':'var(--g200)'}`,
+            background:dom===d?P.find(x=>x.domain===d).c+'0d':'var(--white)',
+            color:dom===d?P.find(x=>x.domain===d).c:'var(--g500)',
+            fontSize:12, fontWeight:500, cursor:'pointer',
+          }}>{d}</button>)}
+        </div>
+      </div>
+
+      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(290px, 1fr))', gap:10, marginBottom:48}}>
+        {filtered.map((p,i) => <Card key={p.id} p={p} onClick={()=>open(p)} i={i}/>)}
+      </div>
+      {filtered.length===0 && <div style={{textAlign:'center', padding:48, color:'var(--g400)', fontSize:13}}>Aucun plugin trouve</div>}
+
+      <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:32}}>
+        <ConnChart/>
+        <Arch/>
+      </div>
+    </>}
+
+    {view==='detail' && sel && <Detail p={sel} onBack={back}/>}
+
+    <footer style={{marginTop:56, paddingTop:20, borderTop:'1px solid var(--g150)', textAlign:'center',
+      fontSize:11, color:'var(--g400)'}}>
+      Knowledge Work Plugins &middot; Anthropic &middot; {P.length} plugins &middot; {TC} commandes &middot; {TS} competences &middot; {AC.length} connecteurs
+    </footer>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
