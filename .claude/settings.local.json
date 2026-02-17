@@ -3,7 +3,27 @@
     "allow": [
       "Bash(xargs:*)",
       "Bash(wc:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "WebFetch(domain:www.anc.gouv.fr)",
+      "WebFetch(domain:www.pcg.fr)",
+      "WebFetch(domain:www.l-expert-comptable.com)",
+      "WebFetch(domain:www.comptabilisation.fr)",
+      "WebFetch(domain:www.cactus-compta.fr)",
+      "WebFetch(domain:fr.wikipedia.org)",
+      "WebFetch(domain:www.pennylane.com)",
+      "WebFetch(domain:www.compta-online.com)",
+      "WebFetch(domain:www.legifiscal.fr)",
+      "WebFetch(domain:support.ebp.com)",
+      "WebFetch(domain:www.hudellet-arres.fr)",
+      "WebFetch(domain:blog.ig-conseils.com)",
+      "WebFetch(domain:www.votre-expert-des-associations.fr)",
+      "WebFetch(domain:www.crcf-edu.fr)",
+      "WebFetch(domain:www.groupe-fiba.fr)",
+      "WebFetch(domain:www.sadec-akelys.fr)",
+      "WebFetch(domain:help.inqom.com)",
+      "WebFetch(domain:help.pennylane.com)",
+      "Bash(while read f)",
+      "Bash(do wc -w \"$f\")"
     ]
   }
 }

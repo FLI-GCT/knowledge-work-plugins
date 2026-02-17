@@ -75,12 +75,14 @@ Le compte de résultat PCG est présenté par nature de charges/produits (pas pa
 - Charges d'exploitation : achats de marchandises (607), variation de stocks de marchandises (6037), achats de matières premières (601/602), variation de stocks de matières (6031/6032), autres achats et charges externes (60x hors 601/602/607, 61x, 62x), impôts/taxes (63x), salaires (641), charges sociales (645), dotations amortissements/provisions (681), autres charges (65x)
 
 **Résultat financier :**
-- Produits financiers : participations (761), autres titres (762), intérêts (764), reprises provisions (786), gains de change (766), produits nets cessions VMP (767)
+- Produits financiers : revenus des participations (761), produits des autres immobilisations financières (762), revenus des VMP (764), reprises provisions (786), gains de change (766), produits nets cessions VMP (767)
 - Charges financières : intérêts (661), pertes de change (666), dotations provisions (686), charges nettes cessions VMP (667)
 
 **Résultat exceptionnel :**
-- Produits exceptionnels : sur opérations de gestion (771), sur opérations en capital (775 produits cessions, 777 quote-part subventions), reprises (787)
-- Charges exceptionnelles : sur opérations de gestion (671), sur opérations en capital (675 VNC cédés), dotations (687)
+- Produits exceptionnels : sur exercices antérieurs (772), autres produits exceptionnels (778), reprises (787)
+- Charges exceptionnelles : sur exercices antérieurs (672), autres charges exceptionnelles (678), dotations (687)
+
+> **PCG 2025 :** Les anciens comptes 671, 675, 771, 775 et 777 sont supprimés. Les cessions d'immobilisations passent désormais par 657/757 (gestion courante) et 6671-6673/7671-7673 (titres financiers). La quote-part de subventions est reclassée en 747.
 
 **Après résultat courant :**
 - Participation des salariés (691)
@@ -101,7 +103,7 @@ Les SIG décomposent le résultat en étapes successives de création de valeur 
 | 6 | **RCAI** | Résultat d'exploitation + Résultat financier | Performance avant éléments exceptionnels |
 | 7 | **Résultat exceptionnel** | Produits exceptionnels - Charges exceptionnelles | Impact des éléments non récurrents |
 | 8 | **Résultat net** | RCAI + Résultat exceptionnel - Participation - IS | Résultat final revenant aux associés |
-| 9 | **CAF** | Résultat net + Dotations - Reprises + VNC cédés - Produits cessions - Quote-part subventions | Capacité de financement générée par l'activité |
+| 9 | **CAF** | Résultat net + Dotations - Reprises + VNC cédées (657) - Produits cessions immo. (757) - Quote-part subventions (747) | Capacité de financement générée par l'activité |
 
 ### Ratios clés issus des SIG
 

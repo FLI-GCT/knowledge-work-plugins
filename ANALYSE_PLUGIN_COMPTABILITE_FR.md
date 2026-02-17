@@ -1,10 +1,11 @@
 # Analyse Complète du Plugin Comptabilité France
 
-> **Date d'analyse :** 15 février 2026
+> **Date d'analyse :** 17 février 2026 (mise à jour)
 > **Version du plugin :** 1.0.0
-> **Auteur du plugin :** Anthropic
+> **Auteur du plugin :** Guillaume CLEMENT — Flow Line Intégration
 > **Licence :** Apache 2.0
 > **Plugin de référence :** Finance (US GAAP/IFRS)
+> **Conformité normative :** PCG 2025 (règlement ANC 2014-03 modifié par ANC 2022-06, applicable 1er janvier 2025)
 
 ---
 
@@ -14,7 +15,7 @@
 2. [Architecture et structure des fichiers](#2-architecture-et-structure-des-fichiers)
 3. [Métriques détaillées (mots, lignes, couverture)](#3-métriques-détaillées)
 4. [Analyse des Commandes (6)](#4-analyse-des-commandes)
-5. [Analyse des Skills (7)](#5-analyse-des-skills)
+5. [Analyse des Skills (8)](#5-analyse-des-skills)
 6. [Connecteurs et intégrations MCP](#6-connecteurs-et-intégrations-mcp)
 7. [Faire de la comptabilité française sans connecteur ERP](#7-faire-de-la-comptabilité-française-sans-connecteur-erp)
 8. [Comment devra être un connecteur ERP français](#8-comment-devra-être-un-connecteur-erp-français)
@@ -36,6 +37,7 @@ Le plugin Comptabilité France est conçu pour **Cowork** (l'application desktop
 - Analyse des écarts et variance analysis
 - Liasse fiscale (cerfa 2050-2059) et passage comptable → fiscal
 - Clôture mensuelle et annuelle avec calendrier fiscal
+- Référentiel PCG complet (8 classes, ~500 comptes, conforme ANC 2022-06)
 
 **Avertissement intégré :** Chaque fichier du plugin contient un disclaimer en français indiquant qu'il ne fournit pas de conseil comptable, fiscal ou juridique. Tous les résultats doivent être revus par un expert-comptable ou un professionnel qualifié.
 
@@ -73,7 +75,7 @@ comptabilite-fr/
 │   ├── analyse-ecarts.md        # /analyse-ecarts — Analyse de variance
 │   └── liasse-fiscale.md        # /liasse-fiscale — Cerfa 2050-2059
 │
-└── skills/                      # 7 skills (bases de connaissances méthodologiques)
+└── skills/                      # 8 skills (bases de connaissances méthodologiques)
     ├── ecritures-pcg/
     │   └── SKILL.md             # Plan comptable, schémas d'écritures, FEC
     ├── rapprochement-bancaire/
@@ -86,13 +88,15 @@ comptabilite-fr/
     │   └── SKILL.md             # Checklist clôture, dépendances, calendrier fiscal
     ├── fiscalite-francaise/
     │   └── SKILL.md             # TVA, IS, CET, C3S, liasse fiscale
-    └── charges-sociales/
-        └── SKILL.md             # Bulletin de paie, cotisations, DSN, provisions
+    ├── charges-sociales/
+    │   └── SKILL.md             # Bulletin de paie, cotisations, DSN, provisions
+    └── plan-comptable-general/
+        └── SKILL.md             # Référentiel PCG 2025 complet (8 classes, ~500 comptes)
 ```
 
-**Total : 18 fichiers** (2 config JSON + 3 fichiers racine MD + 1 LICENSE + 6 commandes + 7 skills)
+**Total : 20 fichiers** (2 config JSON + 3 fichiers racine MD + 1 LICENSE + 6 commandes + 8 skills)
 
-**Comparaison avec le plugin Finance :** +2 fichiers (16 → 18), +1 commande (5 → 6), +1 skill (6 → 7).
+**Comparaison avec le plugin Finance :** +4 fichiers (16 → 20), +1 commande (5 → 6), +2 skills (6 → 8).
 
 ---
 
@@ -102,71 +106,73 @@ comptabilite-fr/
 
 | Fichier | Catégorie | Mots | Lignes | Ratio mots/ligne |
 |---------|-----------|-----:|-------:|-----------------:|
-| `plugin.json` | Config | 44 | 8 | 5,5 |
+| `plugin.json` | Config | 49 | 8 | 6,1 |
 | `.mcp.json` | Config | 33 | 20 | 1,7 |
-| `README.md` | Doc | 805 | 95 | 8,5 |
+| `README.md` | Doc | 833 | 96 | 8,7 |
 | `CONNECTORS.md` | Doc | 227 | 22 | 10,3 |
 | `LICENSE` | Légal | 1 581 | 202 | 7,8 |
-| **Sous-total Config/Doc** | | **2 690** | | |
+| **Sous-total Config/Doc** | | **2 723** | | |
 | | | | | |
-| `commands/etats-financiers.md` | Commande | 1 735 | 285 | 6,1 |
+| `commands/etats-financiers.md` | Commande | 1 734 | 285 | 6,1 |
 | `commands/liasse-fiscale.md` | Commande | 1 410 | 177 | 8,0 |
 | `commands/declaration-tva.md` | Commande | 1 161 | 180 | 6,5 |
 | `commands/ecriture-comptable.md` | Commande | 1 069 | 146 | 7,3 |
 | `commands/rapprochement.md` | Commande | 937 | 156 | 6,0 |
 | `commands/analyse-ecarts.md` | Commande | 911 | 152 | 6,0 |
-| **Sous-total Commandes** | | **7 223** | **1 096** | **6,6 moy.** |
+| **Sous-total Commandes** | | **7 222** | **1 096** | **6,6 moy.** |
 | | | | | |
+| `skills/plan-comptable-general/SKILL.md` | Skill | 5 395 | 657 | 8,2 |
 | `skills/fiscalite-francaise/SKILL.md` | Skill | 1 758 | 216 | 8,1 |
-| `skills/cloture-comptable/SKILL.md` | Skill | 1 657 | 233 | 7,1 |
-| `skills/ecritures-pcg/SKILL.md` | Skill | 1 648 | 282 | 5,8 |
+| `skills/ecritures-pcg/SKILL.md` | Skill | 1 665 | 283 | 5,9 |
+| `skills/cloture-comptable/SKILL.md` | Skill | 1 663 | 233 | 7,1 |
+| `skills/etats-financiers-pcg/SKILL.md` | Skill | 1 388 | 154 | 9,0 |
 | `skills/charges-sociales/SKILL.md` | Skill | 1 371 | 229 | 6,0 |
-| `skills/etats-financiers-pcg/SKILL.md` | Skill | 1 352 | 152 | 8,9 |
 | `skills/analyse-ecarts/SKILL.md` | Skill | 1 251 | 180 | 7,0 |
 | `skills/rapprochement-bancaire/SKILL.md` | Skill | 1 092 | 156 | 7,0 |
-| **Sous-total Skills** | | **10 129** | **1 448** | **7,0 moy.** |
+| **Sous-total Skills** | | **15 583** | **2 108** | **7,4 moy.** |
 | | | | | |
-| **GRAND TOTAL** | | **20 042** | **~2 544+** | |
+| **GRAND TOTAL** | | **25 528** | **~3 204+** | |
 
 ### 3.2. Répartition proportionnelle
 
 ```
-Skills        ██████████████████████████████████████░░░░░░  50,5%  (10 129 mots)
-Commandes     ██████████████████████████░░░░░░░░░░░░░░░░░░  36,0%  (7 223 mots)
-Config/Doc    █████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  13,4%  (2 690 mots)
+Skills        ████████████████████████████████████████████  61,0%  (15 583 mots)
+Commandes     ██████████████████░░░░░░░░░░░░░░░░░░░░░░░░░  28,3%  (7 222 mots)
+Config/Doc    ██████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  10,7%  (2 723 mots)
 ```
 
 **Comparaison avec le plugin Finance :**
 
 | Indicateur | Finance (US) | Comptabilité FR | Évolution |
 |------------|-------------:|----------------:|----------:|
-| Grand total mots | 15 791 | 20 042 | **+27%** |
-| Commandes (mots) | 4 221 | 7 223 | **+71%** |
-| Skills (mots) | 9 038 | 10 129 | **+12%** |
-| Config/Doc | 2 532 | 2 690 | +6% |
+| Grand total mots | 15 791 | 25 528 | **+62%** |
+| Commandes (mots) | 4 221 | 7 222 | **+71%** |
+| Skills (mots) | 9 038 | 15 583 | **+72%** |
+| Config/Doc | 2 532 | 2 723 | +8% |
 | Nb commandes | 5 | 6 | +1 |
-| Nb skills | 6 | 7 | +1 |
-| Nb fichiers | 16 | 18 | +2 |
+| Nb skills | 6 | 8 | +2 |
+| Nb fichiers | 16 | 20 | +4 |
 
 ### 3.3. Classement par taille (mots) — Commandes et Skills uniquement
 
 | Rang | Fichier | Type | Mots |
 |------|---------|------|-----:|
-| 1 | fiscalite-francaise/SKILL.md | Skill | 1 758 |
-| 2 | etats-financiers.md | Commande | 1 735 |
-| 3 | cloture-comptable/SKILL.md | Skill | 1 657 |
-| 4 | ecritures-pcg/SKILL.md | Skill | 1 648 |
-| 5 | liasse-fiscale.md | Commande | 1 410 |
-| 6 | charges-sociales/SKILL.md | Skill | 1 371 |
-| 7 | etats-financiers-pcg/SKILL.md | Skill | 1 352 |
-| 8 | analyse-ecarts/SKILL.md | Skill | 1 251 |
-| 9 | declaration-tva.md | Commande | 1 161 |
-| 10 | rapprochement-bancaire/SKILL.md | Skill | 1 092 |
-| 11 | ecriture-comptable.md | Commande | 1 069 |
-| 12 | rapprochement.md | Commande | 937 |
-| 13 | analyse-ecarts.md | Commande | 911 |
+| 1 | **plan-comptable-general/SKILL.md** | **Skill** | **5 395** |
+| 2 | fiscalite-francaise/SKILL.md | Skill | 1 758 |
+| 3 | etats-financiers.md | Commande | 1 734 |
+| 4 | ecritures-pcg/SKILL.md | Skill | 1 665 |
+| 5 | cloture-comptable/SKILL.md | Skill | 1 663 |
+| 6 | liasse-fiscale.md | Commande | 1 410 |
+| 7 | etats-financiers-pcg/SKILL.md | Skill | 1 388 |
+| 8 | charges-sociales/SKILL.md | Skill | 1 371 |
+| 9 | analyse-ecarts/SKILL.md | Skill | 1 251 |
+| 10 | declaration-tva.md | Commande | 1 161 |
+| 11 | rapprochement-bancaire/SKILL.md | Skill | 1 092 |
+| 12 | ecriture-comptable.md | Commande | 1 069 |
+| 13 | rapprochement.md | Commande | 937 |
+| 14 | analyse-ecarts.md | Commande | 911 |
 
-**Observation :** Contrairement au plugin Finance où le fichier le plus volumineux est un skill (audit-support, 2 312 mots), ici les fichiers sont plus équilibrés : le plus gros est un skill (fiscalite-francaise, 1 758 mots) mais la commande `/etats-financiers` (1 735 mots) est quasi-égale. Aucun fichier ne dépasse 1 800 mots, indiquant une distribution plus homogène.
+**Observation :** Le fichier le plus volumineux est le skill `plan-comptable-general` (5 395 mots) — le référentiel PCG complet des 8 classes avec ~500 comptes officiels, les nouveaux comptes ANC 2022-06, les notes de suppression et la table des erreurs fréquentes. Il représente à lui seul 21% du plugin et dépasse largement le plus gros fichier du plugin Finance US (audit-support, 2 312 mots). Hors ce référentiel, les fichiers restent équilibrés (1 092 à 1 758 mots).
 
 ### 3.4. Densité sémantique par commande
 
@@ -357,7 +363,7 @@ CA comptable (comptes 70x)
 | 6 | **RCAI** | Résultat exploitation + Résultat financier | — |
 | 7 | **Résultat exceptionnel** | Produits exceptionnels - Charges exceptionnelles | — |
 | 8 | **Résultat net** | RCAI + Résultat exceptionnel - Participation - IS | RN / CA |
-| 9 | **CAF** | RN + Dotations - Reprises + VNC cédés - Produits cessions | CAF / CA |
+| 9 | **CAF** | RN + Dotations - Reprises + VNC cédées (657) - Produits cessions (757) - Subventions virées (747) | CAF / CA |
 
 **Seuils de signalement des variations (configurables) :**
 - Variation en euros > seuil défini (ex. 10K€, 50K€)
@@ -499,7 +505,9 @@ Mapping complet des cases cerfa avec comptes PCG :
 
 Les skills sont des **bases de connaissances méthodologiques** que Claude consulte en contexte. Contrairement aux commandes, elles ne sont pas invoquées directement par l'utilisateur mais enrichissent les réponses de Claude avec des bonnes pratiques et des méthodologies adaptées au contexte français.
 
-### 5.1. `ecritures-pcg` — 1 648 mots, 282 lignes
+> **Conformité PCG 2025 :** Tous les skills ont été mis à jour pour refléter le règlement ANC 2022-06 (applicable au 1er janvier 2025) : suppression des comptes 671, 675, 771, 775, 777, 791/796/797 et des subdivisions 531/532/533 ; ajout des nouveaux comptes 657, 757, 747, 649, 658x, 758x, 667x, 767x ; reclassement des transferts de charges.
+
+### 5.1. `ecritures-pcg` — 1 665 mots, 283 lignes
 
 **Rôle :** Plan comptable général, schémas d'écritures courantes, traitement de la TVA et conformité FEC.
 
@@ -547,7 +555,7 @@ Les skills sont des **bases de connaissances méthodologiques** que Claude consu
 
 ---
 
-### 5.3. `etats-financiers-pcg` — 1 352 mots, 152 lignes
+### 5.3. `etats-financiers-pcg` — 1 388 mots, 154 lignes
 
 **Rôle :** Formats des états financiers PCG, SIG, annexe légale et références normatives.
 
@@ -557,7 +565,7 @@ Les skills sont des **bases de connaissances méthodologiques** que Claude consu
 |---------|---------|
 | **Bilan — Actif** | Structure détaillée : immobilisations incorporelles/corporelles/financières (comptes 20x, 21x, 26-27x), actif circulant (3x, 41x, 50x, 51x), CCA (486). Règles : Brut/Amort/Net obligatoire, liquidité croissante |
 | **Bilan — Passif** | Capitaux propres (101-14x), provisions pour risques et charges (15x), dettes (16x-46x), PCA (487). Règle : exigibilité croissante |
-| **Compte de résultat** | Par nature (pas par fonction) : résultat d'exploitation (classes 6/7 exploitation), résultat financier (66x/76x), résultat exceptionnel (67x/77x), participation (691), IS (695) |
+| **Compte de résultat** | Par nature (pas par fonction) : résultat d'exploitation (classes 6/7 exploitation), résultat financier (66x/76x), résultat exceptionnel (672/678/772/778 depuis PCG 2025), participation (691), IS (695) |
 | **SIG** | 9 soldes avec formules et signification, 6 ratios clés |
 | **Annexe légale** | 10 informations obligatoires (règles/méthodes, tableaux immobilisations/amortissements/provisions, créances/dettes par échéance, engagements hors bilan, effectifs, rémunérations dirigeants, entreprises liées) |
 | **Références normatives** | PCG art. 810-1 à 810-3, Code de commerce L123-12 à L123-28, Règlement ANC 2014-03, Directive 2013/34/UE |
@@ -596,7 +604,7 @@ Les skills sont des **bases de connaissances méthodologiques** que Claude consu
 
 ---
 
-### 5.5. `cloture-comptable` — 1 657 mots, 233 lignes
+### 5.5. `cloture-comptable` — 1 663 mots, 233 lignes
 
 **Rôle :** Gestion du processus de clôture mensuelle et annuelle avec calendrier fiscal français.
 
@@ -688,6 +696,36 @@ Les skills sont des **bases de connaissances méthodologiques** que Claude consu
 | **Intéressement** | Accord d'entreprise, écriture (6414+645/4286), forfait social 20% si ≥ 250 salariés |
 
 **Importance :** Ce skill comble une lacune majeure du plugin Finance US qui ne couvre les charges de paie qu'au niveau macro (4 composantes : salaires, avantages, taxes FICA/FUTA, primes) sans détail des cotisations. Le système social français est considérablement plus complexe que le système US.
+
+---
+
+### 5.8. `plan-comptable-general` — 5 395 mots, 657 lignes (le plus gros fichier du plugin) — SKILL SANS ÉQUIVALENT DANS LE PLUGIN FINANCE
+
+**Rôle :** Référentiel complet du Plan Comptable Général français, conforme au règlement ANC 2014-03 modifié par ANC 2022-06 (applicable 1er janvier 2025). Sert de source de vérité pour tous les numéros de comptes utilisés par le plugin.
+
+**Sections couvertes :**
+
+| Section | Contenu |
+|---------|---------|
+| **Classe 1 — Capitaux** | ~60 comptes : capital (101), réserves (106x), report à nouveau (110/119), subventions (131 renommé "Subventions d'investissement octroyées"), provisions (15x), emprunts (16x), dettes rattachées (17x), liaison (18x). Ajout 102 Fonds fiduciaires |
+| **Classe 2 — Immobilisations** | ~60 comptes : incorporelles (20x), corporelles (21x), en cours (23x), participations (26x), autres financières (27x), amortissements (28x), dépréciations (29x) |
+| **Classe 3 — Stocks** | ~25 comptes : matières premières (31), approvisionnements (32x), en-cours biens/services (33-34), produits (35x), marchandises (37), dépréciations (39x) |
+| **Classe 4 — Tiers** | ~100 comptes : fournisseurs (40x avec FNP 4081), clients (41x avec douteux 416), personnel (42x avec congés 4282), organismes sociaux (43x), TVA complet (445xx — 15 sous-comptes), groupe/associés (45x), divers (46x), régularisation (48x CCA/PCA), dépréciations (49x) |
+| **Classe 5 — Financiers** | ~30 comptes : VMP (50x), banques (51x), instruments financiers (52), **53 Caisse** (sans subdivisions depuis PCG 2025), régies (54), virements internes (580), dépréciations (59x). Note ANC 2022-06 suppression 531/532/533 |
+| **Classe 6 — Charges** | ~100 comptes avec mise à jour PCG 2025 : achats (60x), services extérieurs (61-62x), impôts/taxes (63x + nouveau 638), personnel (64x + nouveau 649), autres charges (65x avec 657 cessions immo., **658x pénalités** — 6581/6582/6583/6584/6588), charges financières (66x avec **667x subdivisé** 6671/6672/6673, nouveau 6683), exceptionnelles (67 réduit à 672/678), dotations (68x avec 6862 remplaçant 6812), IS (69x). Note suppressions 671/675 |
+| **Classe 7 — Produits** | ~70 comptes avec mise à jour PCG 2025 : ventes (70x), production stockée/immobilisée (71-72), subventions (74x avec **747** remplaçant 777, **742** subventions d'équilibre), autres produits (75x avec 757 cessions immo., **758x indemnités** — 7581 à 7588), financiers (76x avec **767x subdivisé** 7671/7672/7673, nouveau 7683), exceptionnels (77 réduit à 772/778), reprises (78x). Note suppressions 771/775/777/791/796/797 |
+| **Classe 8 — Spéciaux** | ~15 comptes : engagements hors bilan (80x), bilan ouverture/clôture (89x) |
+| **Erreurs fréquentes** | 11 erreurs répertoriées avec correction PCG 2025 : 530→53, 675→657/6671, 775→757/7671, 777→747, 671→658x, 771→758x, 791→649/7084/7587, 764≠intérêts, 153≠provisions charges, 155≠provisions charges, 656≠666 |
+| **Principes de numérotation** | 7 règles structurelles (longueur minimale, symétrie 6xx/7xx, terminaison 8/9, régularisation 48x, dépréciations x9x) + tableau des sens normaux par classe |
+
+**Métriques clés :**
+- ~500 comptes référencés au total
+- ~25 nouveaux comptes ANC 2022-06 ajoutés
+- ~15 comptes supprimés identifiés et documentés
+- 11 erreurs fréquentes avec correction
+- 7 règles de numérotation
+
+**Importance :** Ce skill est la **colonne vertébrale** du plugin. Il garantit que Claude utilise les bons numéros de comptes PCG dans toutes les écritures et tous les états financiers. Son volume (5 395 mots — 21% du plugin) reflète l'exhaustivité du PCG français. Aucun équivalent n'existe dans le plugin Finance US, qui n'intègre pas de référentiel de plan comptable.
 
 ---
 
@@ -1098,7 +1136,8 @@ PHASE PRÉ-CLÔTURE (J-2 à J-3) — 7 tâches
 | **Lettrage français** | Technique de lettrage avec attribution de lettres, 4 méthodes |
 | **Références normatives** | PCG, Code de commerce, CGI, Règlement ANC, Directive UE |
 | **Disclaimers systématiques** | Chaque fichier rappelle la nécessité de validation par un expert-comptable |
-| **Volume de contenu** | 20 042 mots — +27% par rapport au plugin Finance US |
+| **Référentiel PCG intégré** | 5 395 mots, ~500 comptes, conforme ANC 2022-06 — aucun équivalent dans le plugin Finance US |
+| **Volume de contenu** | 25 528 mots — +62% par rapport au plugin Finance US |
 
 ### 10.2. Limites
 
@@ -1124,24 +1163,25 @@ PHASE PRÉ-CLÔTURE (J-2 à J-3) — 7 tâches
 
 | Domaine | Commande | Mots cmd | Skill | Mots skill | Ratio Skill/Cmd |
 |---------|----------|--------:|-------|----------:|----------------:|
-| Écritures comptables | `/ecriture` | 1 069 | `ecritures-pcg` | 1 648 | 1,54x |
+| Écritures comptables | `/ecriture` | 1 069 | `ecritures-pcg` | 1 665 | 1,56x |
 | Rapprochement | `/rapprochement` | 937 | `rapprochement-bancaire` | 1 092 | 1,17x |
 | Déclaration TVA | `/declaration-tva` | 1 161 | `fiscalite-francaise` | 1 758 | 1,51x |
-| États financiers | `/etats-financiers` | 1 735 | `etats-financiers-pcg` | 1 352 | **0,78x** |
+| États financiers | `/etats-financiers` | 1 734 | `etats-financiers-pcg` | 1 388 | **0,80x** |
 | Analyse des écarts | `/analyse-ecarts` | 911 | `analyse-ecarts` | 1 251 | 1,37x |
 | Liasse fiscale | `/liasse-fiscale` | 1 410 | `fiscalite-francaise` | 1 758 | 1,25x |
-| Clôture comptable | *aucune* | — | `cloture-comptable` | 1 657 | ∞ |
+| Clôture comptable | *aucune* | — | `cloture-comptable` | 1 663 | ∞ |
 | Charges sociales | *aucune* | — | `charges-sociales` | 1 371 | ∞ |
-| **Total** | **6 commandes** | **7 223** | **7 skills** | **10 129** | **1,40x** |
+| Référentiel PCG | *aucune* | — | `plan-comptable-general` | 5 395 | ∞ |
+| **Total** | **6 commandes** | **7 222** | **8 skills** | **15 583** | **2,16x** |
 
 **Observations :**
-- Le ratio moyen skill/commande est de **1,33x** (hors skills sans commande correspondante), inférieur au plugin Finance US (1,77x). Cela reflète des commandes plus volumineuses dans le plugin FR (+71% de mots dans les commandes).
-- Exception notable : `/etats-financiers` (1 735 mots) est **plus volumineuse** que son skill correspondant (1 352 mots), ratio inversé de 0,78x. La commande intègre directement les templates bilan, CR et SIG.
-- 2 skills n'ont pas de commande correspondante : `cloture-comptable` et `charges-sociales`.
+- Le ratio moyen skill/commande est de **1,31x** (hors skills sans commande correspondante), comparable au plugin Finance US (1,77x). Cependant, le volume total des skills est nettement supérieur grâce au référentiel PCG (5 395 mots).
+- Exception notable : `/etats-financiers` (1 734 mots) est **plus volumineuse** que son skill correspondant (1 388 mots), ratio inversé de 0,80x. La commande intègre directement les templates bilan, CR et SIG.
+- 3 skills n'ont pas de commande correspondante : `cloture-comptable`, `charges-sociales` et `plan-comptable-general`.
 
 ### 11.2. Différence de rôle
 
-| Aspect | Commandes (6) | Skills (7) |
+| Aspect | Commandes (6) | Skills (8) |
 |--------|---------------|------------|
 | **Invocation** | Explicite par l'utilisateur (`/ecriture`, `/rapprochement`, etc.) | Implicite — Claude les consulte en contexte |
 | **Langue** | Français intégral | Français intégral |
@@ -1151,7 +1191,7 @@ PHASE PRÉ-CLÔTURE (J-2 à J-3) — 7 tâches
 | **Conditionnalité** | Oui (`si ~~erp connecté` / `si aucune source`) | Non |
 | **Disclaimer** | Oui (dans chaque fichier) | Oui (dans chaque fichier) |
 | **Référence CONNECTORS.md** | Oui (lien en haut de chaque commande) | Non |
-| **Total mots** | 7 223 (36,0% du total) | 10 129 (50,5% du total) |
+| **Total mots** | 7 222 (28,3% du total) | 15 583 (61,0% du total) |
 
 ### 11.3. Architecture d'ensemble
 
@@ -1168,11 +1208,12 @@ PHASE PRÉ-CLÔTURE (J-2 à J-3) — 7 tâches
                           │  /etats-financiers            │
                           │  /analyse-ecarts              │
                           │  /liasse-fiscale              │
-                          │     7 223 mots (36%)          │
+                          │     7 222 mots (28%)          │
                           └──────────────┬───────────────┘
                                          │ consulte
                           ┌──────────────▼───────────────┐
-                          │     7 SKILLS (Knowledge)      │
+                          │     8 SKILLS (Knowledge)      │
+                          │  plan-comptable-general       │
                           │  ecritures-pcg                │
                           │  rapprochement-bancaire       │
                           │  etats-financiers-pcg         │
@@ -1180,7 +1221,7 @@ PHASE PRÉ-CLÔTURE (J-2 à J-3) — 7 tâches
                           │  cloture-comptable            │
                           │  fiscalite-francaise          │
                           │  charges-sociales             │
-                          │     10 129 mots (51%)         │
+                          │     15 583 mots (61%)         │
                           └──────────────┬───────────────┘
                                          │ accède via
                           ┌──────────────▼───────────────┐
@@ -1191,7 +1232,7 @@ PHASE PRÉ-CLÔTURE (J-2 à J-3) — 7 tâches
                           │  ~~data warehouse (BigQuery)  │
                           │  ~~chat (Slack)               │
                           │  ~~email/office (MS 365)      │
-                          │     2 690 mots (13%)          │
+                          │     2 723 mots (11%)          │
                           └──────────────────────────────┘
 ```
 
@@ -1203,15 +1244,15 @@ PHASE PRÉ-CLÔTURE (J-2 à J-3) — 7 tâches
 
 | Indicateur | Finance (US) | Comptabilité FR | Différence |
 |------------|-------------:|----------------:|-----------:|
-| Fichiers totaux | 16 | 18 | +2 (+13%) |
+| Fichiers totaux | 16 | 20 | +4 (+25%) |
 | Commandes | 5 | 6 | +1 |
-| Skills | 6 | 7 | +1 |
-| Mots totaux | 15 791 | 20 042 | +4 251 (+27%) |
-| Mots commandes | 4 221 | 7 223 | +3 002 (+71%) |
-| Mots skills | 9 038 | 10 129 | +1 091 (+12%) |
+| Skills | 6 | 8 | +2 |
+| Mots totaux | 15 791 | 25 528 | +9 737 (+62%) |
+| Mots commandes | 4 221 | 7 222 | +3 001 (+71%) |
+| Mots skills | 9 038 | 15 583 | +6 545 (+72%) |
 | Mots moy. par commande | 844 | 1 204 | +360 (+43%) |
-| Mots moy. par skill | 1 506 | 1 447 | -59 (-4%) |
-| Fichier le plus gros | audit-support (2 312) | fiscalite-francaise (1 758) | -554 |
+| Mots moy. par skill | 1 506 | 1 948 | +442 (+29%) |
+| Fichier le plus gros | audit-support (2 312) | plan-comptable-general (5 395) | +3 083 |
 | Points checklist (max) | 11 (/je) | 12 (/ecriture) | +1 |
 | Catégories connecteurs | 7 | 9 | +2 (paie, banque) |
 
@@ -1243,10 +1284,12 @@ PHASE PRÉ-CLÔTURE (J-2 à J-3) — 7 tâches
 | IS et fiscalité | Faible (provision IS seulement) | **Excellente** (IS, CET, C3S, liasse) |
 | Charges sociales | Partielle (4 composantes) | **Bonne** (cotisations détaillées, DSN) |
 | FEC | Absent | Intégré (18 champs) |
+| Référentiel plan comptable | Absent (non normalisé aux US) | **Excellente** (~500 comptes, ANC 2022-06) |
+| Conformité PCG 2025 | N/A | **Excellente** (ANC 2022-06 intégré) |
 | Tableau flux trésorerie | Bonne | **Absent** |
 | Consolidation | Partielle | Partielle |
 | Budget | Partielle | Partielle |
 
 ---
 
-> **Conclusion :** Le plugin Comptabilité France constitue une adaptation complète et approfondie du plugin Finance US au contexte français. Avec **20 042 mots** répartis sur 18 fichiers, il dépasse le plugin original de 27% en volume de contenu. Son architecture identique (tool-agnostic, dégradation gracieuse, YAML frontmatter) garantit la compatibilité avec l'écosystème Cowork/Claude Code. Les deux ajouts majeurs — la commande `/declaration-tva` et le skill `charges-sociales` — comblent les lacunes les plus critiques identifiées dans l'analyse du plugin Finance pour le marché français. La couverture fiscale (TVA, IS, CET, C3S, liasse fiscale cerfa 2050-2059) et la conformité FEC en font un outil opérationnel pour les cabinets d'expertise comptable et les directions financières françaises, sous réserve de validation par un professionnel qualifié. Le potentiel maximum du plugin sera atteint lorsque des connecteurs MCP pour les ERP français (Sage, Cegid, Pennylane) et les logiciels de paie (Silae, PayFit) seront disponibles.
+> **Conclusion :** Le plugin Comptabilité France constitue une adaptation complète et approfondie du plugin Finance US au contexte français. Avec **25 528 mots** répartis sur 20 fichiers (6 commandes, 8 skills), il dépasse le plugin original de **62%** en volume de contenu. L'ajout du référentiel PCG complet (5 395 mots, ~500 comptes) et la mise en conformité intégrale avec le **règlement ANC 2022-06** (applicable au 1er janvier 2025) — suppressions des comptes 671/675/771/775/777/791-797/531-533, ajout des nouveaux comptes 657/757/747/649/658x/758x/667x/767x — en font un outil aligné sur le PCG en vigueur. Son architecture identique (tool-agnostic, dégradation gracieuse, YAML frontmatter) garantit la compatibilité avec l'écosystème Cowork/Claude Code. Les trois ajouts majeurs — la commande `/declaration-tva`, le skill `charges-sociales` et le skill `plan-comptable-general` — comblent les lacunes les plus critiques identifiées dans l'analyse du plugin Finance pour le marché français. La couverture fiscale (TVA, IS, CET, C3S, liasse fiscale cerfa 2050-2059) et la conformité FEC en font un outil opérationnel pour les cabinets d'expertise comptable et les directions financières françaises, sous réserve de validation par un professionnel qualifié. Le potentiel maximum du plugin sera atteint lorsque des connecteurs MCP pour les ERP français (Sage, Cegid, Pennylane) et les logiciels de paie (Silae, PayFit) seront disponibles.

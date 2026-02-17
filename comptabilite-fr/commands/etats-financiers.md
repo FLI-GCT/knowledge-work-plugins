@@ -155,7 +155,7 @@ PRODUITS D'EXPLOITATION
   Production stockée                        X XXX         X XXX           X XXX   X%
   Production immobilisée                    X XXX         X XXX           X XXX   X%
   Subventions d'exploitation                X XXX         X XXX           X XXX   X%
-  Reprises sur provisions et transferts     X XXX         X XXX           X XXX   X%
+  Reprises sur provisions                   X XXX         X XXX           X XXX   X%
   Autres produits                           X XXX         X XXX           X XXX   X%
 TOTAL PRODUITS D'EXPLOITATION               X XXX         X XXX           X XXX   X%
 
@@ -257,9 +257,9 @@ SOLDES INTERMÉDIAIRES DE GESTION — Exercice [Année]
    Résultat net                             X XXX         X XXX
    + Dotations aux amortissements et prov.  X XXX         X XXX
    - Reprises sur amortissements et prov.  (X XXX)       (X XXX)
-   + Valeur nette comptable des éléments cédés X XXX      X XXX
-   - Produits de cession d'éléments d'actif(X XXX)       (X XXX)
-   - Quote-part subventions virées au résultat(X XXX)    (X XXX)
+   + VNC des immo. corp./incorp. cédées (657) X XXX       X XXX
+   - Produits de cession d'immo. (757)     (X XXX)       (X XXX)
+   - Quote-part subventions virées (747)   (X XXX)       (X XXX)
    = CAF                                    X XXX         X XXX           X XXX   X%
 ```
 

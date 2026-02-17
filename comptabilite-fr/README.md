@@ -1,8 +1,20 @@
 # Plugin Comptabilité France
 
-Un plugin de comptabilité française conçu pour [Cowork](https://claude.com/product/cowork), l'application desktop agentique d'Anthropic — compatible également avec Claude Code. Couvre les écritures comptables PCG, le rapprochement bancaire, la déclaration de TVA, les états financiers, la liasse fiscale et la clôture comptable.
+Un plugin de comptabilité française conçu pour [Cowork](https://claude.com/product/cowork), l'application desktop agentique d'Anthropic — compatible également avec Claude Code. Couvre les écritures comptables PCG, le rapprochement bancaire, la déclaration de TVA, les états financiers, la liasse fiscale, la clôture comptable et le référentiel PCG complet.
 
-> **Important** : Ce plugin assiste dans les workflows de comptabilité française mais ne fournit pas de conseil comptable, fiscal ou juridique. Tous les résultats doivent être revus par un expert-comptable ou un professionnel qualifié avant utilisation dans les déclarations fiscales, les états financiers ou les documents réglementaires.
+**Auteur :** Guillaume CLEMENT — [Flow Line Intégration](https://flowline.fr)
+
+**Conformité :** PCG 2025 — Règlement ANC 2014-03 modifié par ANC 2022-06 (applicable au 1er janvier 2025)
+
+> **Avertissement — Décharge de responsabilité** : Ce plugin assiste dans les workflows de comptabilité française mais **ne fournit pas de conseil comptable, fiscal ou juridique**. Les résultats produits par l'intelligence artificielle peuvent contenir des erreurs. Tous les résultats doivent être **systématiquement vérifiés et validés par un expert-comptable ou un professionnel qualifié** avant toute utilisation dans les déclarations fiscales, les états financiers ou les documents réglementaires. L'auteur et les contributeurs déclinent toute responsabilité en cas d'erreur, d'omission ou de préjudice résultant de l'utilisation de ce plugin.
+
+## Origine et licence
+
+Ce plugin est une **adaptation française** du [plugin Finance](https://github.com/anthropics/knowledge-work-plugins/tree/main/finance) officiel d'Anthropic (US GAAP/IFRS), réalisée par de **multiples agents IA** (Claude Opus, Claude Sonnet) sous la direction de Guillaume CLEMENT.
+
+L'ensemble du travail est publié sous **licence Apache 2.0** — voir le fichier [LICENSE](LICENSE) pour les termes complets.
+
+> Le plugin Finance original est la propriété d'Anthropic. Cette adaptation française ne constitue pas un produit officiel Anthropic. Les noms Anthropic, Claude, Cowork sont des marques d'Anthropic, PBC.
 
 ## Installation
 
@@ -25,6 +37,7 @@ claude plugins add knowledge-work-plugins/comptabilite-fr
 
 | Skill | Description |
 |-------|-------------|
+| `plan-comptable-general` | Référentiel complet du PCG 2025 (ANC 2014-03 modifié par ANC 2022-06) — 8 classes, ~500 comptes officiels, principes de numérotation, table des erreurs fréquentes |
 | `ecritures-pcg` | Schémas d'écritures PCG, classes 1-7, traitement TVA (collectée, déductible, intracommunautaire), écritures d'inventaire et obligations FEC |
 | `rapprochement-bancaire` | Méthodologie de rapprochement bancaire, lettrage des comptes tiers, formats CFONB/SEPA, bonnes pratiques et seuils d'escalade |
 | `etats-financiers-pcg` | Bilan et compte de résultat format PCG, soldes intermédiaires de gestion (SIG), contenu de l'annexe légale et références normatives |
@@ -93,3 +106,13 @@ Ajoutez vos serveurs MCP dans la section `mcpServers` du fichier `.mcp.json` de 
 - `suite-bureautique` — Outils bureautiques pour la génération de documents
 - `email` — Email pour l'envoi de rapports et demandes de validation
 - `chat` — Communication d'équipe pour le suivi de clôture
+
+## Métriques
+
+| Indicateur | Valeur |
+|---|---|
+| Mots de savoir total | 23 947 |
+| Commandes | 6 |
+| Skills | 8 |
+| Fichiers | 20 |
+| Conformité | PCG 2025 (ANC 2022-06) |

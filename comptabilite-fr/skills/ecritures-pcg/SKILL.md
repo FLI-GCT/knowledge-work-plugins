@@ -46,7 +46,7 @@ Schémas d'écritures conformes au Plan Comptable Général, traitement de la TV
 **Classe 5 — Financiers :**
 - 512 Banques
 - 514 Chèques postaux
-- 530 Caisse
+- 53 Caisse
 - 580 Virements internes
 
 **Classe 6 — Charges :**
@@ -68,8 +68,8 @@ Schémas d'écritures conformes au Plan Comptable Général, traitement de la TV
 - 645 Charges de sécurité sociale et de prévoyance
 - 646 Cotisations sociales personnelles de l'exploitant
 - 6611 Intérêts des emprunts et dettes
-- 671 Charges exceptionnelles sur opérations de gestion
-- 675 Valeurs comptables des éléments d'actif cédés
+- 657 Valeurs comptables des immobilisations incorporelles et corporelles cédées
+- 658 Pénalités et autres charges (6581 pénalités sur marchés, 6582 amendes)
 - 681 Dotations aux amortissements, dépréciations et provisions — Exploitation
 - 686 Dotations aux amortissements, dépréciations et provisions — Financier
 - 687 Dotations aux amortissements, dépréciations et provisions — Exceptionnel
@@ -83,7 +83,8 @@ Schémas d'écritures conformes au Plan Comptable Général, traitement de la TV
 - 721 Production immobilisée — immobilisations incorporelles
 - 722 Production immobilisée — immobilisations corporelles
 - 741 Subventions d'exploitation
-- 775 Produits des cessions d'éléments d'actif
+- 747 Quote-part des subventions d'investissement virée au résultat
+- 757 Produits des cessions d'immobilisations incorporelles et corporelles
 - 781 Reprises sur amortissements, dépréciations et provisions — Exploitation
 - 786 Reprises — Financier
 - 787 Reprises — Exceptionnel

@@ -86,7 +86,7 @@ En plus des travaux de clôture mensuelle, la clôture annuelle requiert :
 - [ ] Revue du registre des immobilisations
 - [ ] Calcul des dotations annuelles aux amortissements
 - [ ] Identification des immobilisations à déprécier (test de dépréciation)
-- [ ] Comptabilisation des cessions d'immobilisations (675/775)
+- [ ] Comptabilisation des cessions d'immobilisations (657/757 pour immo. corp./incorp., 6671-6673/7671-7673 pour titres)
 - [ ] Vérification de la cohérence bilan / tableau des immobilisations (feuillet 2054)
 
 ### Provisions et dépréciations
